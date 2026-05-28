@@ -2,6 +2,29 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="సినిమాలోకం">
+<meta name="application-name" content="సినిమాలోకం">
+<meta name="theme-color" content="#05050f">
+<meta name="description" content="Live Indian Cinema Dashboard — Movies, OTT, Theaters">
+<link rel="manifest" href="data:application/json,{
+  &quot;name&quot;: &quot;సినిమాలోకం&quot;,
+  &quot;short_name&quot;: &quot;సినిమా&quot;,
+  &quot;description&quot;: &quot;Live Indian Cinema Dashboard&quot;,
+  &quot;start_url&quot;: &quot;/Cinemalokam/&quot;,
+  &quot;display&quot;: &quot;standalone&quot;,
+  &quot;background_color&quot;: &quot;#05050f&quot;,
+  &quot;theme_color&quot;: &quot;#e8a945&quot;,
+  &quot;orientation&quot;: &quot;portrait&quot;,
+  &quot;icons&quot;: [{
+    &quot;src&quot;: &quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%2305050f'/%3E%3Crect x='8' y='8' width='176' height='176' rx='28' fill='%230e0e1c'/%3E%3Ctext x='50%25' y='58%25' font-size='100' text-anchor='middle' dominant-baseline='middle'%3E🎬%3C/text%3E%3C/svg%3E&quot;,
+    &quot;sizes&quot;: &quot;192x192&quot;,
+    &quot;type&quot;: &quot;image/svg+xml&quot;,
+    &quot;purpose&quot;: &quot;any maskable&quot;
+  }]
+}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>సినిమాలోకం · Telugu Cinema Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -13,6 +36,25 @@
     --text: #f0ead8; --muted: #7a7590; --dim: #4a4560; --faint: #3a3550;
     --crimson: #c0392b; --teal: #1abc9c;
   }
+
+  /* ── PWA INSTALL BANNER ── */
+  #installBanner {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: linear-gradient(90deg, #0e0e1c, #1a1a2e);
+    border-bottom: 1px solid var(--gold-border);
+    padding: 10px 16px; font-size: 0.82rem; color: var(--text);
+  }
+  #installBanner span { flex: 1; }
+  #installBtn {
+    background: var(--gold); color: #05050f; font-weight: 700;
+    font-size: 0.78rem; padding: 6px 16px; border-radius: 6px;
+    border: none; cursor: pointer; font-family: inherit;
+  }
+  #installDismiss {
+    background: none; border: none; color: var(--muted);
+    font-size: 1rem; cursor: pointer; padding: 2px 6px;
+  }
+
   html { scroll-behavior: smooth; }
   body {
     font-family: 'DM Sans', sans-serif;
@@ -517,6 +559,13 @@
 </div>
 
 <div id="app">
+
+  <!-- ── PWA INSTALL BANNER ── -->
+  <div id="installBanner" style="display:none">
+    <span>📲 Install సినిమాలోకం as an app</span>
+    <button id="installBtn">Install</button>
+    <button id="installDismiss">✕</button>
+  </div>
   <nav>
     <div class="nav-logo">సినిమా<span>లోకం</span></div>
     <div class="tabs">
@@ -1504,8 +1553,36 @@ function escHtml(s) {
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+
+// ── PWA INSTALL PROMPT ──────────────────────────────
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('installBanner');
+  if (banner) banner.style.display = 'flex';
+});
+
+document.getElementById('installBtn')?.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBanner').style.display = 'none';
+});
+
+document.getElementById('installDismiss')?.addEventListener('click', () => {
+  document.getElementById('installBanner').style.display = 'none';
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').style.display = 'none';
+  deferredPrompt = null;
+});
+
 // ── PASTE YOUR TMDB API KEY BELOW ──────────────────────
-const HARDCODED_KEY = 'YOUR_TMDB_API_KEY_HERE';
+const HARDCODED_KEY = '4ecc9d7879aec4910efa54c7523c7dcd';
 // ───────────────────────────────────────────────────────
 
 try {
@@ -1521,3 +1598,4 @@ try {
 </script>
 </body>
 </html>
+
