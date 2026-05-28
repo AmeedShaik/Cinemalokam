@@ -1504,9 +1504,19 @@ function escHtml(s) {
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── PASTE YOUR TMDB API KEY BELOW ──────────────────────
+const HARDCODED_KEY = 'YOUR_TMDB_API_KEY_HERE';
+// ───────────────────────────────────────────────────────
+
 try {
-  const saved = localStorage.getItem('tmdb_key');
-  if (saved) { API_KEY = saved; bootApp(); }
+  if (HARDCODED_KEY && HARDCODED_KEY !== '4ecc9d7879aec4910efa54c7523c7dcd') {
+    API_KEY = HARDCODED_KEY;
+    localStorage.setItem('tmdb_key', HARDCODED_KEY);
+    bootApp();
+  } else {
+    const saved = localStorage.getItem('tmdb_key');
+    if (saved) { API_KEY = saved; bootApp(); }
+  }
 } catch {}
 </script>
 </body>
